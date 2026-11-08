@@ -1,0 +1,48 @@
+:root {
+    /* Containers vars: */
+    --container-width: 1200px;
+    --container-vertical-padding: 20px;
+    /* Elemets vars: */
+    --elements-base-gap: 30px;
+    --elements-medium-gap: 15px;
+    --elements-small-gap: 5px;
+    --elements-base-radius: 8px;
+    --element-button-width: 200px;
+    --element-button-padding: 8px 20px;
+    --element-card-padding: 20px;
+    /* Colors vars: */
+    --danger-color: #A53F2B;
+    --primary-color: #488286;
+    --base-text-color: #fff;
+    /* Fonts vars: */
+    --headers-font-ize: 24px;
+}
+
+* {
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    font-size: 16px;
+    text-decoration: none;
+    color: var(--base-text-color);
+    outline: none;
+}
+
+body {
+    background-color: #292929;
+}
+
+button {
+    border: none;
+    color: var(--base-text-color);
+    max-width: var(--element-button-width);
+    width: 100%;
+    padding: var(--element-button-padding);
+    border-radius: var(--elements-base-radius);
+    cursor: pointer;
+}
+
+.blue-links {
+    color: var(--primary-color);
+}
