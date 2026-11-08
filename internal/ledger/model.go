@@ -32,7 +32,12 @@ type Transfer struct {
 	CreatedAt     time.Time `db:"created_at" json:"created_at"`
 }
 
+type TransferIncoming struct {
+	Transfer
+	IsSystem bool `db:"is_system" json:"is_system"`
+}
+
 type TransfersList struct {
-	TransfersSent     []Transfer `json:"transfers_sent"`
-	TransfersIncoming []Transfer `json:"transfers_incoming"`
+	TransfersSent     []Transfer         `json:"transfers_sent"`
+	TransfersIncoming []TransferIncoming `json:"transfers_incoming"`
 }

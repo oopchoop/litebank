@@ -23,7 +23,7 @@ export function Login() {
 
             window.location.href = '/dashboard'
         } catch (err: any) {
-            const errorMessage = err.response?.data?.error || 'Неверный номер телефона или пароль';
+            const errorMessage = err.response?.data?.error || 'Incorrect phone or password';
 
             toast.error(errorMessage)
         }

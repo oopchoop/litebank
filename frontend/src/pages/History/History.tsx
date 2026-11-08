@@ -1,12 +1,12 @@
 import api from "../../api/client";
 import { useState, useEffect } from "react";
-import type { Transfer, TransferList } from "../../api/types";
+import type { Transfer, TransferIncoming, TransferList } from "../../api/types";
 import { TransferCard } from "../../components/TransferCard/TransferCard";
 import styles from "./Histroy.module.css";
 
 
 export function History() {
-    const [transfersIncoming, setTransfersIncoming] = useState<Transfer[]>([]);
+    const [transfersIncoming, setTransfersIncoming] = useState<TransferIncoming[]>([]);
     const [transfersSent, setTransfersSent] = useState<Transfer[]>([]);
     const [activeTab, setActiveTab] = useState<"incoming" | "sent">("incoming");
 

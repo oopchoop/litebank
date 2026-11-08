@@ -4,6 +4,7 @@ import { Button } from "../../components/Button/Button"
 import { Link } from "react-router-dom"
 import api from "../../api/client"
 import React, { useState } from "react"
+import toast from "react-hot-toast"
 
 export function Register() {
     const [phone, setPhone] = useState('')
@@ -17,8 +18,8 @@ export function Register() {
         e.preventDefault()
 
         if (password !== passwordConfirm) {
-            console.log('Password not confirmed');
-            
+            toast.error('Password not confirmed')            
+
             return
         }
 
@@ -31,9 +32,13 @@ export function Register() {
                   patronymic: patronymic
             })
 
+            toast.success('Success registration')
+
             window.location.href = '/login'
         } catch (err: any) {
-            console.log(err);
+            const errorMessage = err.response?.data?.error || 'Incorrect register data'
+
+            toast.error(errorMessage)            
         }
     }
 

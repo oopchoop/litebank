@@ -14,7 +14,11 @@ export interface Transfer {
     created_at: string;
 }
 
+export interface TransferIncoming extends Transfer {
+    is_system: boolean;
+}
+
 export interface TransferList {
     transfers_sent: Transfer[];
-    transfers_incoming: Transfer[];
+    transfers_incoming: TransferIncoming[];
 }

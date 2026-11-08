@@ -1,24 +1,34 @@
-import type { Transfer } from "../../api/types";
+import type { Transfer, TransferIncoming } from "../../api/types";
 import { formatDateTime, formatMoney } from "../../utils/format";
 import styles from "./TransferCard.module.css";
 
 interface TransferCardProps {
-    transfer: Transfer;
+    transfer: Transfer | TransferIncoming;
 }
 
 export function TransferCard({transfer}: TransferCardProps) {
+    const isSystem = "is_system" in transfer && transfer.is_system;
+
+    const sumText = isSystem ? 'Сумма пополнения: ' : 'Сумма перевода: ';
+
     return (
         <div className={styles.card}>
             <div>
-                <span>№</span>
-                <span>{transfer.account_from_id}</span>
-                <span>➜</span>
-                <span>№</span>
-                <span>{transfer.account_to_id}</span>
+                {isSystem ? (
+                    <span>Пополнение баланса</span>
+                ) : (
+                    <>
+                        <span>№</span>
+                        <span>{transfer.account_from_id}</span>
+                        <span>➜</span>
+                        <span>№</span>
+                        <span>{transfer.account_to_id}</span>
+                    </>                
+                )}
             </div>
 
             <div>
-                <span>Сумма перевода: </span>
+                <span>{sumText}</span>
                 <span>{formatMoney(transfer.amount)}</span>
             </div>
 

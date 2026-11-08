@@ -7,6 +7,7 @@ import { Modal } from "../../components/Modal/Modal";
 import { LabelField } from "../../components/Field/LabelField";
 import { AuthForm } from "../../components/Forms/AuthForm";
 import styles from "./Dashboard.module.css";
+import toast from "react-hot-toast";
 
 export function Dashboard() {
     const [accounts, setAccounts] = useState<Account[]>([]);
@@ -26,7 +27,9 @@ export function Dashboard() {
 
             setAccounts(response.data)
         } catch (err: any) {
-            console.log(err);
+            const errorMessage = err.response?.data?.error || 'Fetch accounts error'
+
+            toast.error(errorMessage)
         } finally {
             setIsLoading(false)
         }
@@ -40,9 +43,13 @@ export function Dashboard() {
         try {
             await api.post('/accounts')
 
-            location.reload()            
+            fetchAccounts()
+            
+            toast.success('Success account create')
         } catch (err: any) {
-            console.log(err);
+            const errorMessage = err.response?.data?.error || 'Account create error'
+
+            toast.error(errorMessage)
         }
     }
 
@@ -73,9 +80,13 @@ export function Dashboard() {
 
             setDepositSum('');
 
+            toast.success('Success deposit create')
+
             fetchAccounts();
         } catch (err: any) {
-            console.log(err);
+            const errorMessage = err.response?.data?.error || 'Account create error'
+
+            toast.error(errorMessage)
         } 
     }
 
@@ -94,9 +105,13 @@ export function Dashboard() {
             setTransferAccount('');
             setTransferSum('');
 
+            toast.success('Success transfer create')
+
             fetchAccounts();
         } catch (err: any) {
-            console.log(err);
+            const errorMessage = err.response?.data?.error || 'Account create error'
+
+            toast.error(errorMessage)
         }
     }
 

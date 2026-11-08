@@ -270,6 +270,7 @@ func (r *Repository) GetTransfers(ctx context.Context, userID int64) (*Transfers
 		 FROM transfers tr
 		 INNER JOIN users_accounts ua ON ua.account_id = tr.account_from_id
 		 WHERE ua.user_id = $1
+		 ORDER BY tr.id DESC
 		 `,
 		userID)
 
@@ -285,10 +286,13 @@ func (r *Repository) GetTransfers(ctx context.Context, userID int64) (*Transfers
 	rowsSent.Close()
 
 	rowsIncoming, err := r.pool.Query(ctx,
-		`SELECT tr.id, tr.amount, tr.account_from_id, tr.account_to_id, tr.created_at
+		`SELECT tr.id, tr.amount, tr.account_from_id, tr.account_to_id, tr.created_at,
+				a.is_system
 		 FROM transfers tr
 		 INNER JOIN users_accounts ua ON ua.account_id = tr.account_to_id
-		 WHERE ua.user_id = $1`,
+		 INNER JOIN accounts a ON a.id = tr.account_from_id
+		 WHERE ua.user_id = $1
+		 ORDER BY tr.id DESC`,
 		userID)
 
 	if err != nil {
@@ -297,7 +301,7 @@ func (r *Repository) GetTransfers(ctx context.Context, userID int64) (*Transfers
 
 	defer rowsIncoming.Close()
 
-	transfersGet, err := pgx.CollectRows(rowsIncoming, pgx.RowToStructByName[Transfer])
+	transfersGet, err := pgx.CollectRows(rowsIncoming, pgx.RowToStructByName[TransferIncoming])
 	if err != nil {
 		return nil, fmt.Errorf("select transfers: %w", err)
 	}
