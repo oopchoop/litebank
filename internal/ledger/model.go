@@ -3,17 +3,19 @@ package ledger
 import "time"
 
 type NewTransfer struct {
-	UserID        int64
-	AccountToID   int64
-	AccountFromID int64
-	Amount        int64
-	IsSystem      bool
+	UserID         int64
+	AccountToID    int64
+	AccountFromID  int64
+	Amount         int64
+	IsSystem       bool
+	IdempotencyKey string
 }
 
 type NewDeposit struct {
-	UserID      int64
-	AccountToID int64
-	Amount      int64
+	UserID         int64
+	AccountToID    int64
+	Amount         int64
+	IdempotencyKey string
 }
 
 type Account struct {

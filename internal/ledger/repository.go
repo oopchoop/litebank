@@ -6,6 +6,7 @@ import (
 	"fmt"
 
 	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgconn"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
@@ -78,10 +79,10 @@ func (r *Repository) executeTransfer(ctx context.Context, transfer NewTransfer, 
 	var transferID int64
 
 	transferErr := tx.QueryRow(ctx,
-		`INSERT INTO transfers(amount, account_from_id, account_to_id)
-		VALUES ($1, $2, $3)
+		`INSERT INTO transfers(amount, account_from_id, account_to_id, idempotency_key)
+		VALUES ($1, $2, $3, $4)
 		RETURNING id`,
-		transfer.Amount, transfer.AccountFromID, transfer.AccountToID,
+		transfer.Amount, transfer.AccountFromID, transfer.AccountToID, transfer.IdempotencyKey,
 	).Scan(&transferID)
 
 	if transferErr != nil {
@@ -175,7 +176,34 @@ func (r *Repository) beginTx(ctx context.Context) (pgx.Tx, error) {
 	return tx, nil
 }
 
+func (r *Repository) checkIdempotencyKey(ctx context.Context, idempotencyKey string) (bool, error) {
+	if idempotencyKey == "" {
+		return false, nil
+	}
+
+	var exists bool
+
+	err := r.pool.QueryRow(ctx,
+		`SELECT EXISTS(SELECT 1 FROM transfers WHERE idempotency_key = $1)`,
+		idempotencyKey,
+	).Scan(&exists)
+
+	if err != nil {
+		return false, fmt.Errorf("Select exists transfer for idempotency_key: %w", err)
+	}
+
+	return exists, nil
+}
+
 func (r *Repository) Transfer(ctx context.Context, transfer NewTransfer) error {
+	exists, err := r.checkIdempotencyKey(ctx, transfer.IdempotencyKey)
+	if err != nil {
+		return err
+	}
+	if exists {
+		return nil
+	}
+
 	tx, err := r.beginTx(ctx)
 
 	if err != nil {
@@ -189,6 +217,11 @@ func (r *Repository) Transfer(ctx context.Context, transfer NewTransfer) error {
 	}
 
 	if err := r.executeTransfer(ctx, transfer, tx); err != nil {
+		var pgErr *pgconn.PgError
+		if errors.As(err, &pgErr) && pgErr.Code == "23505" {
+			return nil
+		}
+
 		return err
 	}
 
@@ -200,6 +233,14 @@ func (r *Repository) Transfer(ctx context.Context, transfer NewTransfer) error {
 }
 
 func (r *Repository) Deposit(ctx context.Context, deposit NewDeposit) error {
+	exists, err := r.checkIdempotencyKey(ctx, deposit.IdempotencyKey)
+	if err != nil {
+		return err
+	}
+	if exists {
+		return nil
+	}
+
 	tx, err := r.beginTx(ctx)
 
 	if err != nil {
@@ -225,12 +266,18 @@ func (r *Repository) Deposit(ctx context.Context, deposit NewDeposit) error {
 	}
 
 	if err := r.executeTransfer(ctx, NewTransfer{
-		UserID:        deposit.UserID,
-		AccountToID:   deposit.AccountToID,
-		AccountFromID: systemAccountID,
-		Amount:        deposit.Amount,
-		IsSystem:      true,
+		UserID:         deposit.UserID,
+		AccountToID:    deposit.AccountToID,
+		AccountFromID:  systemAccountID,
+		Amount:         deposit.Amount,
+		IsSystem:       true,
+		IdempotencyKey: deposit.IdempotencyKey,
 	}, tx); err != nil {
+		var pgxErr *pgconn.PgError
+		if errors.As(err, &pgxErr) && pgxErr.Code == "23505" {
+			return nil
+		}
+
 		return err
 	}
 

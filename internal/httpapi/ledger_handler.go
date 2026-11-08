@@ -75,10 +75,13 @@ func CreateDepositHandler(service *ledger.Service) http.HandlerFunc {
 			return
 		}
 
+		idempotencyKey := r.Header.Get("Idempotency-Key")
+
 		err := service.CreateDeposit(ctx, ledger.NewDeposit{
-			UserID:      userID,
-			AccountToID: req.AccountToID,
-			Amount:      req.Amount,
+			UserID:         userID,
+			AccountToID:    req.AccountToID,
+			Amount:         req.Amount,
+			IdempotencyKey: idempotencyKey,
 		})
 
 		if err != nil {
@@ -117,12 +120,15 @@ func CreateTransferHandler(service *ledger.Service) http.HandlerFunc {
 			return
 		}
 
+		idempotencyKey := r.Header.Get("Idempotency-Key")
+
 		err := service.CreateTransfer(ctx, ledger.NewTransfer{
-			UserID:        userID,
-			AccountToID:   req.AccountToID,
-			AccountFromID: req.AccountFromID,
-			Amount:        req.Amount,
-			IsSystem:      false,
+			UserID:         userID,
+			AccountToID:    req.AccountToID,
+			AccountFromID:  req.AccountFromID,
+			Amount:         req.Amount,
+			IsSystem:       false,
+			IdempotencyKey: idempotencyKey,
 		})
 
 		if err != nil {
