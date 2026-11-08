@@ -8,6 +8,7 @@ import { LabelField } from "../../components/Field/LabelField";
 import { AuthForm } from "../../components/Forms/AuthForm";
 import styles from "./Dashboard.module.css";
 import toast from "react-hot-toast";
+import { v4 as uuidv4 } from "uuid";
 
 export function Dashboard() {
     const [accounts, setAccounts] = useState<Account[]>([]);
@@ -18,6 +19,7 @@ export function Dashboard() {
     const [depositSum, setDepositSum] = useState('');
     const [transferSum, setTransferSum] = useState('');
     const [transferAccout, setTransferAccount] = useState('');
+    const [idempotencyKey, setIdempotencyKey] = useState('');
 
     const fetchAccounts = async () => {
         setIsLoading(true)
@@ -60,11 +62,13 @@ export function Dashboard() {
     const onDepositClick = (accountId: number) => {
         setIsDepositOpen(true);
         setSelectedAccount(accountId);
+        setIdempotencyKey(uuidv4())
     }
 
     const onTransferClick = (accountId: number) => {
         setIsTransferOpen(true);
         setSelectedAccount(accountId);
+        setIdempotencyKey(uuidv4())
     }
     
     const handlerDeposit = async (e: React.FormEvent) => {
@@ -74,6 +78,10 @@ export function Dashboard() {
             await api.post('/deposit', {
                 account_to_id: selectedAccount,
                 amount: Number(depositSum) * 100,
+            }, {
+                headers: {
+                    "Idempotency-Key": idempotencyKey
+                },
             });
 
             setIsDepositOpen(false);
@@ -98,6 +106,10 @@ export function Dashboard() {
                 account_to_id: Number(transferAccout),
                 account_from_id: selectedAccount,
                 amount: Number(transferSum) * 100,
+            }, {
+                headers: {
+                    "Idempotency-Key": idempotencyKey
+                },
             });
 
             setIsTransferOpen(false);
