@@ -30,6 +30,18 @@ type AuthResponse struct {
 	UserToken string `json:"user_token"`
 }
 
+// RegisterHandler godoc
+// @Summary User registration
+// @Description Create new user
+// @Tags auth
+// @Accept json
+// @Produce json
+// @Param input body RegisterRequest true "Data for register"
+// @Success 201 {object} RegisterResponse
+// @Failure 400 {object} ErrorResponse
+// @Failure 409 {object} ErrorResponse
+// @Failure 500 {object} ErrorResponse
+// @Router /register [post]
 func RegisterHandler(service *auth.Service) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
@@ -64,6 +76,19 @@ func RegisterHandler(service *auth.Service) http.HandlerFunc {
 	}
 }
 
+// AuthHandler godoc
+// @Summary User auth
+// @Description Authorization and create JWT token
+// @Tags auth
+// @Accept json
+// @Produce json
+// @Param input body AuthRequest true "Data for auth"
+// @Success 200 {object} AuthResponse
+// @Failure 400 {object} ErrorResponse
+// @Failure 401 {object} ErrorResponse
+// @Failure 504 {object} ErrorResponse
+// @Failure 500 {object} ErrorResponse
+// @Router /auth [post]
 func AuthHandler(service *auth.Service) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()

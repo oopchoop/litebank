@@ -14,8 +14,18 @@ import (
 	"github.com/oopchoop/litebank/internal/platform/postgres"
 	"github.com/oopchoop/litebank/internal/token"
 	"github.com/rs/cors"
+
+	_ "github.com/oopchoop/litebank/docs"
 )
 
+// @title Litebank API
+// @version 1.0
+// @description API for bank LiteBank
+// @host localhost:8181
+// @BasePath /
+// @securityDefinitions.apikey BearerAuth
+// @in header
+// @name Authorization
 func main() {
 	cfg, err := config.Load()
 

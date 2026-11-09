@@ -1,0 +1,122 @@
+basePath: /
+definitions:
+  httpapi.AuthRequest:
+    properties:
+      password:
+        type: string
+      phone_number:
+        type: string
+    type: object
+  httpapi.AuthResponse:
+    properties:
+      user_token:
+        type: string
+    type: object
+  httpapi.ErrorResponse:
+    properties:
+      error:
+        type: string
+    type: object
+  httpapi.RegisterRequest:
+    properties:
+      first_name:
+        type: string
+      last_name:
+        type: string
+      password:
+        type: string
+      patronymic:
+        type: string
+      phone_number:
+        type: string
+    type: object
+  httpapi.RegisterResponse:
+    properties:
+      id:
+        type: integer
+    type: object
+host: localhost:8181
+info:
+  contact: {}
+  description: API for bank LiteBank
+  title: Litebank API
+  version: "1.0"
+paths:
+  /auth:
+    post:
+      consumes:
+      - application/json
+      description: Authorization and create JWT token
+      parameters:
+      - description: Data for auth
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/httpapi.AuthRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/httpapi.AuthResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httpapi.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/httpapi.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httpapi.ErrorResponse'
+        "504":
+          description: Gateway Timeout
+          schema:
+            $ref: '#/definitions/httpapi.ErrorResponse'
+      summary: User auth
+      tags:
+      - auth
+  /register:
+    post:
+      consumes:
+      - application/json
+      description: Create new user
+      parameters:
+      - description: Data for register
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/httpapi.RegisterRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/httpapi.RegisterResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httpapi.ErrorResponse'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/httpapi.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httpapi.ErrorResponse'
+      summary: User registration
+      tags:
+      - auth
+securityDefinitions:
+  BearerAuth:
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"

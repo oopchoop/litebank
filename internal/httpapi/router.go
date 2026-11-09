@@ -7,6 +7,7 @@ import (
 	"github.com/oopchoop/litebank/internal/auth"
 	"github.com/oopchoop/litebank/internal/ledger"
 	"github.com/oopchoop/litebank/internal/token"
+	httpSwagger "github.com/swaggo/http-swagger/v2"
 )
 
 type Pinger interface {
@@ -25,6 +26,11 @@ func NewRouter(h Handlers) http.Handler {
 
 	// check db connection
 	mux.HandleFunc("GET /health", HealthHandler(h.DB))
+
+	// swagger route
+	mux.Handle("GET /swagger/", httpSwagger.Handler(
+		httpSwagger.URL("/swagger/doc.json"),
+	))
 
 	// auth
 	mux.HandleFunc("POST /register", RegisterHandler(h.AuthSvc))
