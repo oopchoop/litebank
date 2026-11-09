@@ -33,6 +33,21 @@ services:
       timeout: 5s
       retries: 5
 
+  api:
+    build:
+      context: .
+    container_name: litebank_api
+    ports:
+      - "8181:8181"
+    environment:
+      DATABASE_URL: "postgres://admin:admin@postgres:5432/litebank?sslmode=disable"
+      APP_HOST: "0.0.0.0:8181"
+      JWT_SECRET: "MrZKkEKGV5wSzMDNvRwN5gd6ijT3CdsyHG96iExa6WM="
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+
   adminer:
     image: adminer:latest
     container_name: litebank_adminer
