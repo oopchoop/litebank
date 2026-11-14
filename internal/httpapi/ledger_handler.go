@@ -28,6 +28,17 @@ type CreateTransferRequest struct {
 	Amount        int64 `json:"amount"`
 }
 
+// CreateAccountHandler godoc
+// @Summary Create account
+// @Description Create new account for user
+// @Tags accounts
+// @Accept json
+// @Produce json
+// @Security BearerAuth
+// @Success 201 {object} CreateAccountResponse "Success created account"
+// @Failure 401 {object} ErrorResponse "Unauthorized"
+// @Failure 500 {object} ErrorResponse "Internal server error"
+// @Router /accounts [post]
 func CreateAccountHandler(service *ledger.Service) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		userID, ok := GetUserID(r.Context())
@@ -51,6 +62,21 @@ func CreateAccountHandler(service *ledger.Service) http.HandlerFunc {
 	}
 }
 
+// CreateDepositHandler godoc
+// @Summary Create deposit
+// @Description Create deposit for account
+// @Tags transfers
+// @Accept json
+// @Produce json
+// @Security BearerAuth
+// @Param Idempotency-Key header string false "Unique key to prevent double deposit"
+// @Param input body CreateDepositRequest true "Data for create deposit"
+// @Success 200 {object} MessageResponse "Success deposit"
+// @Failure 400 {object} ErrorResponse "Bad request"
+// @Failure 401 {object} ErrorResponse "Unauthorized"
+// @Failure 403 {object} ErrorResponse "Access denied"
+// @Failure 500 {object} ErrorResponse "Internal server error"
+// @Router /deposit [post]
 func CreateDepositHandler(service *ledger.Service) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
@@ -95,6 +121,21 @@ func CreateDepositHandler(service *ledger.Service) http.HandlerFunc {
 	}
 }
 
+// CreateTransferHandler godoc
+// @Summary Create transfer
+// @Description Create transfer from account to another account
+// @Tags transfers
+// @Accept json
+// @Produce json
+// @Security BearerAuth
+// @Param Idempotency-Key header string false "Unique key to prevent double tranfser"
+// @Param input body CreateTransferRequest true "Data for create tranfser"
+// @Success 201 {object} MessageResponse "Success create transfer"
+// @Failure 400 {object} ErrorResponse "Bad request"
+// @Failure 401 {object} ErrorResponse "Unauthorized"
+// @Failure 403 {object} ErrorResponse "Access denied"
+// @Failure 500 {object} ErrorResponse "Internal server error"
+// @Router /transfer [post]
 func CreateTransferHandler(service *ledger.Service) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
@@ -142,6 +183,17 @@ func CreateTransferHandler(service *ledger.Service) http.HandlerFunc {
 	}
 }
 
+// GetAccountHandler godoc
+// @Summary Get user accounts
+// @Description Get accounts for user
+// @Tags accounts
+// @Accept json
+// @Produce json
+// @Security BearerAuth
+// @Success 200 {array} ledger.Account
+// @Failure 401 {object} ErrorResponse "Unauthorized"
+// @Failure 500 {object} ErrorResponse "Internal server error"
+// @Router /accounts [get]
 func GetAccountsHandler(service *ledger.Service) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
@@ -167,6 +219,17 @@ func GetAccountsHandler(service *ledger.Service) http.HandlerFunc {
 	}
 }
 
+// GetTransfersHandler godoc
+// @Summary Get user transfers
+// @Description Get transfers for user
+// @Tags transfers
+// @Accept json
+// @Produce json
+// @Security BearerAuth
+// @Success 200 {object} ledger.TransfersList
+// @Failure 401 {object} ErrorResponse "Unauthorized"
+// @Failure 500 {object} ErrorResponse "Internal server error"
+// @Router /transfers [get]
 func GetTransfersHandler(service *ledger.Service) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
