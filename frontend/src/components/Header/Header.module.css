@@ -1,0 +1,19 @@
+.header {
+    background-color: #141414;
+}
+
+.container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.navigation {
+    display: flex;
+    gap: var(--elements-base-gap);
+    align-items: center;
+}
+
+.logotype {
+    font-size: 32px;
+}
